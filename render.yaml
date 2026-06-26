@@ -7,7 +7,7 @@ services:
     startCommand: pnpm start
     envVars:
       - key: NODE_VERSION
-        value: "20"
+        value: "22"
       - key: SKIP_CESIUM_COPY
         value: "1"
       - key: NODE_OPTIONS
