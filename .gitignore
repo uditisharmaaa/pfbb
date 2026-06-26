@@ -7,3 +7,4 @@ public/cesium/
 coverage/
 *.tsbuildinfo
 next-dev.*.log
+.DS_Store

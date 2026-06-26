@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Finder but Better</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --rail-width: 52px;
+      --bg-dark: #131314;
+      --text-primary: #e3e3e3;
+      --text-muted: #8e8e8e;
+      --input-bg: #1e1f20;
+      --input-hover: #282a2c;
+      --rail-hover: rgba(255, 255, 255, 0.08);
+      --font: "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      color: var(--text-primary);
+      overflow: hidden;
+      background: var(--bg-dark);
+    }
+
+    /* Living-room background at 60% opacity */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: url("assets/background.png") center / cover no-repeat;
+      opacity: 0.6;
+      z-index: -2;
+    }
+
+    /* Dark overlay + subtle center glow */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 45%, rgba(60, 80, 140, 0.18) 0%, transparent 70%),
+        rgba(19, 19, 20, 0.72);
+      z-index: -1;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ── Icon rail (left sidebar) ── */
+    .rail {
+      width: var(--rail-width);
+      min-width: var(--rail-width);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      z-index: 10;
+    }
+
+    .rail-top,
+    .rail-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .rail-bottom {
+      margin-top: auto;
+    }
+
+    .rail-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rail-btn:hover {
+      background: var(--rail-hover);
+      color: var(--text-primary);
+    }
+
+    .rail-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .rail-logo {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .rail-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .rail-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+    }
+
+    .top-right {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      z-index: 5;
+    }
+
+    .top-right .rail-btn {
+      color: var(--text-muted);
+    }
+
+    /* ── Landing (start page) ── */
+    .landing {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 36px;
+    }
+
+    .greeting {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 400;
+      color: var(--text-primary);
+      text-align: center;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-tagline {
+      font-size: 15px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: -24px;
+      letter-spacing: 0.01em;
+    }
+
+    .landing-input-wrap {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .prewritten-section {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .prewritten-btn {
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      background: rgba(30, 31, 32, 0.75);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .prewritten-btn:hover {
+      background: rgba(40, 42, 44, 0.9);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    /* ── Shared input bar ── */
+    .input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--input-bg);
+      border-radius: 28px;
+      padding: 6px 8px 6px 6px;
+      transition: background 0.15s;
+    }
+
+    .input-bar:hover,
+    .input-bar:focus-within {
+      background: var(--input-hover);
+    }
+
+    .input-bar textarea {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: inherit;
+      resize: none;
+      line-height: 1.5;
+      padding: 10px 4px 10px 16px;
+      max-height: 200px;
+      min-height: 24px;
+    }
+
+    .input-bar textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .send-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #fff;
+      color: #131314;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .send-btn.visible {
+      display: flex;
+    }
+
+    .send-btn.visible:hover {
+      background: #e3e3e3;
+    }
+
+    /* ── Chat view (after first message) ── */
+    .chat-view {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .chat-view.active {
+      display: flex;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 60px 24px 24px;
+      scrollbar-width: thin;
+      scrollbar-color: #444 transparent;
+    }
+
+    .messages-inner {
+      max-width: 768px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .message {
+      display: flex;
+      gap: 16px;
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .message-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .message.user .message-avatar {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+    }
+
+    .message.assistant .message-avatar {
+      background: #fff;
+      color: #131314;
+    }
+
+    .message.assistant .message-avatar svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .message-content {
+      flex: 1;
+      padding-top: 2px;
+      min-width: 0;
+      color: var(--text-primary);
+    }
+
+    .message-content p {
+      margin: 0 0 10px;
+    }
+
+    .message-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-content ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .message-content li {
+      margin-bottom: 6px;
+    }
+
+    .message-content strong {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .message.user .message-content {
+      color: #d4d4d4;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 4px 0;
+    }
+
+    .typing-indicator span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .chat-input-area {
+      padding: 16px 24px 28px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .chat-input-area .landing-input-wrap {
+      max-width: 768px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── Property cards ── */
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .property-card {
+      background: rgba(30, 31, 32, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .property-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .property-card-body {
+      padding: 14px;
+    }
+
+    .property-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .property-card-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .property-card-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 8px;
+    }
+
+    .property-card-desc {
+      font-size: 13px;
+      line-height: 1.45;
+      color: #b8b8b8;
+    }
+
+    .property-broker {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: none;
+    }
+
+    .property-card:hover .property-broker {
+      display: block;
+    }
+
+    .property-broker-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .property-broker-agency {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #25d366;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .whatsapp-btn:hover {
+      background: #1ebe57;
+    }
+
+    /* ── Property modal ── */
+    .property-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .property-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .property-modal-panel {
+      width: min(720px, 100%);
+      max-height: min(90vh, 900px);
+      overflow-y: auto;
+      background: #1a1b1c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      scrollbar-width: thin;
+      scrollbar-color: #444 transparent;
+    }
+
+    .property-modal-hero {
+      position: relative;
+    }
+
+    .property-modal-hero img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .property-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .property-modal-close:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    .property-modal-body {
+      padding: 24px;
+    }
+
+    .property-modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .property-modal-meta {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .property-modal-price {
+      font-size: 20px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+    }
+
+    .property-modal-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #c8c8c8;
+      margin-bottom: 20px;
+    }
+
+    .property-modal-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .property-modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .property-modal-tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .property-modal-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .property-modal-detail {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .property-modal-detail-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .property-modal-detail-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .property-modal-broker {
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .property-modal-broker-info {
+      min-width: 0;
+    }
+
+    .property-modal-broker-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .property-modal-broker-agency {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Icon-only sidebar -->
+    <nav class="rail">
+      <div class="rail-top">
+        <div class="rail-logo" title="Property Finder but Better">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3zm0 2.84L18 11.5V19h-2v-6H8v6H6v-7.5L12 5.84z"/>
+          </svg>
+        </div>
+
+        <!--
+        <button class="rail-btn" id="new-chat" title="New search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" title="Search properties">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" title="Recent searches">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" title="Saved homes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" title="Explore areas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </button>
+        -->
+      </div>
+
+      <div class="rail-bottom">
+        <!--
+        <button class="rail-btn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+        -->
+        <div class="rail-avatar" title="Profile">H</div>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="top-right">
+        <button class="rail-btn" title="Temporary chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3">
+            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-dasharray="0"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Start page -->
+      <section class="landing" id="landing">
+        <h1 class="greeting">Property Finder but Better</h1>
+        <!-- <p class="brand-tagline">Property Finder but Better</p> -->
+        <div class="landing-input-wrap">
+          <div class="input-bar">
+            <textarea id="landing-input" rows="1" placeholder="Let us get you your dream home" autofocus></textarea>
+            <div class="input-bar-right">
+              <button class="send-btn" id="landing-send" title="Send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L4 12h6v10l8-12h-6V2z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="prewritten-section">
+            <button
+              type="button"
+              class="prewritten-btn"
+              id="prewritten-hub71"
+              data-prompt="I am looking for a room, I work at Hub71 and my kids are in ISC Khalifa (SABIS). I have 3 kids and I want to be in close proxomity to all"
+            >Pre-written prompt</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chat view -->
+      <section class="chat-view" id="chat-view">
+        <div class="messages" id="messages">
+          <div class="messages-inner" id="messages-inner"></div>
+        </div>
+        <div class="chat-input-area">
+          <div class="landing-input-wrap">
+            <div class="input-bar">
+              <textarea id="chat-input" rows="1" placeholder="Search properties, areas, or budgets…"></textarea>
+              <div class="input-bar-right">
+                <button class="send-btn" id="chat-send" title="Send">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L4 12h6v10l8-12h-6V2z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="property-modal" id="property-modal" aria-hidden="true">
+    <div class="property-modal-panel" role="dialog" aria-modal="true" aria-labelledby="property-modal-title">
+      <div class="property-modal-hero">
+        <img id="property-modal-image" src="" alt="" />
+        <button type="button" class="property-modal-close" id="property-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="property-modal-body">
+        <h2 class="property-modal-title" id="property-modal-title"></h2>
+        <div class="property-modal-meta" id="property-modal-meta"></div>
+        <div class="property-modal-price" id="property-modal-price"></div>
+        <p class="property-modal-desc" id="property-modal-desc"></p>
+
+        <div class="property-modal-section-title">Details</div>
+        <div class="property-modal-details" id="property-modal-details"></div>
+
+        <div class="property-modal-section-title">Amenities</div>
+        <div class="property-modal-tags" id="property-modal-amenities"></div>
+
+        <div class="property-modal-broker">
+          <div class="property-modal-broker-info">
+            <div class="property-modal-broker-name" id="property-modal-broker-name"></div>
+            <div class="property-modal-broker-agency" id="property-modal-broker-agency"></div>
+          </div>
+          <a class="whatsapp-btn" id="property-modal-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp broker</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PRODUCT_NAME = "Property Finder but Better";
+    const ASSISTANT_ICON = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3z"/></svg>`;
+
+    const CONFIG = {
+      API_URL: "/api/chat",
+      MODEL: "claude-sonnet-4-6",
+    };
+
+    const landing = document.getElementById("landing");
+    const chatView = document.getElementById("chat-view");
+    const messagesInner = document.getElementById("messages-inner");
+    const messagesScroll = document.getElementById("messages");
+
+    const landingInput = document.getElementById("landing-input");
+    const chatInput = document.getElementById("chat-input");
+    const landingSend = document.getElementById("landing-send");
+    const chatSend = document.getElementById("chat-send");
+
+    let conversationHistory = [];
+    let activeInput = landingInput;
+    let preferences = null;
+    let shownProperties = [];
+
+    const propertyModal = document.getElementById("property-modal");
+    const propertyModalClose = document.getElementById("property-modal-close");
+
+    function formatPrice(prop) {
+      const intent = preferences?.intent || "buy";
+      const amount = intent === "rent" ? prop.rentAED : prop.priceAED;
+      if (!amount) return "Price on request";
+      const formatted = amount.toLocaleString("en-AE");
+      return intent === "rent" ? `AED ${formatted}/yr` : `AED ${formatted}`;
+    }
+
+    function formatSqft(value) {
+      return value ? `${value.toLocaleString("en-AE")} sq ft` : "—";
+    }
+
+    function openPropertyModal(prop) {
+      document.getElementById("property-modal-title").textContent = prop.title;
+      document.getElementById("property-modal-meta").textContent =
+        `${prop.bedrooms} bed · ${prop.bathrooms} bath · ${prop.type} · ${prop.area}`;
+      document.getElementById("property-modal-price").textContent = formatPrice(prop);
+      document.getElementById("property-modal-desc").textContent = prop.description;
+
+      const image = document.getElementById("property-modal-image");
+      image.src = prop.images?.[0] || "assets/background.png";
+      image.alt = prop.title;
+      image.onerror = () => {
+        image.onerror = null;
+        image.src = "assets/background.png";
+      };
+
+      const details = document.getElementById("property-modal-details");
+      const intent = preferences?.intent || "buy";
+      const detailItems = [
+        ["Style", prop.style],
+        ["Size", formatSqft(prop.sizeSqft)],
+        ["Price / sq ft", prop.pricePerSqft ? `AED ${prop.pricePerSqft.toLocaleString("en-AE")}` : "—"],
+        ["Intent", intent === "rent" ? "Rent" : "Buy"],
+      ];
+
+      details.innerHTML = detailItems
+        .map(
+          ([label, value]) => `
+            <div class="property-modal-detail">
+              <div class="property-modal-detail-label">${escapeHtml(label)}</div>
+              <div class="property-modal-detail-value">${escapeHtml(String(value))}</div>
+            </div>
+          `
+        )
+        .join("");
+
+      const amenities = document.getElementById("property-modal-amenities");
+      amenities.innerHTML = (prop.amenities || [])
+        .map((item) => `<span class="property-modal-tag">${escapeHtml(item)}</span>`)
+        .join("");
+
+      document.getElementById("property-modal-broker-name").textContent = prop.broker.name;
+      document.getElementById("property-modal-broker-agency").textContent =
+        `${prop.broker.agency} · ${prop.broker.phone}`;
+
+      const whatsapp = document.getElementById("property-modal-whatsapp");
+      whatsapp.href = `https://wa.me/${prop.broker.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${prop.title}`)}`;
+
+      propertyModal.classList.add("open");
+      propertyModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      propertyModalClose.focus();
+    }
+
+    function closePropertyModal() {
+      propertyModal.classList.remove("open");
+      propertyModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    propertyModalClose.addEventListener("click", closePropertyModal);
+    propertyModal.addEventListener("click", (e) => {
+      if (e.target === propertyModal) closePropertyModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && propertyModal.classList.contains("open")) {
+        closePropertyModal();
+      }
+    });
+
+    function renderPropertyCards(properties) {
+      if (!properties?.length) return null;
+
+      const grid = document.createElement("div");
+      grid.className = "property-grid";
+
+      properties.forEach((prop) => {
+        const card = document.createElement("article");
+        card.className = "property-card";
+
+        const img = document.createElement("img");
+        img.src = prop.images?.[0] || "assets/background.png";
+        img.alt = prop.title;
+        img.loading = "lazy";
+        img.referrerPolicy = "no-referrer";
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = "assets/background.png";
+        };
+
+        const body = document.createElement("div");
+        body.className = "property-card-body";
+
+        const title = document.createElement("div");
+        title.className = "property-card-title";
+        title.textContent = prop.title;
+
+        const meta = document.createElement("div");
+        meta.className = "property-card-meta";
+        meta.textContent = `${prop.bedrooms} bed · ${prop.type} · ${prop.area}`;
+
+        const price = document.createElement("div");
+        price.className = "property-card-price";
+        price.textContent = formatPrice(prop);
+
+        const desc = document.createElement("div");
+        desc.className = "property-card-desc";
+        desc.textContent = prop.description;
+
+        const broker = document.createElement("div");
+        broker.className = "property-broker";
+        broker.innerHTML = `
+          <div class="property-broker-name">${escapeHtml(prop.broker.name)}</div>
+          <div class="property-broker-agency">${escapeHtml(prop.broker.agency)} · ${escapeHtml(prop.broker.phone)}</div>
+          <a class="whatsapp-btn" href="https://wa.me/${prop.broker.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${prop.title}`)}" target="_blank" rel="noopener">WhatsApp</a>
+        `;
+        broker.querySelector(".whatsapp-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+
+        body.appendChild(title);
+        body.appendChild(meta);
+        body.appendChild(price);
+        body.appendChild(desc);
+        body.appendChild(broker);
+        card.appendChild(img);
+        card.appendChild(body);
+        card.addEventListener("click", () => openPropertyModal(prop));
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `View details for ${prop.title}`);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openPropertyModal(prop);
+          }
+        });
+        grid.appendChild(card);
+      });
+
+      return grid;
+    }
+
+    function appendAssistantReply(reply, properties) {
+      switchToChat();
+
+      const div = document.createElement("div");
+      div.className = "message assistant";
+
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.innerHTML = ASSISTANT_ICON;
+
+      const body = document.createElement("div");
+      body.className = "message-content";
+
+      const text = document.createElement("div");
+      setAssistantContent(text, reply);
+      body.appendChild(text);
+
+      const cards = renderPropertyCards(properties);
+      if (cards) body.appendChild(cards);
+
+      div.appendChild(avatar);
+      div.appendChild(body);
+      messagesInner.appendChild(div);
+      messagesScroll.scrollTop = messagesScroll.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatAssistantText(text) {
+      const normalized = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .trim();
+
+      if (!normalized) return "";
+
+      if (/\s-\s[🏠📍💰🛏️]/.test(normalized)) {
+        const parts = normalized.split(/\s+-\s+/);
+        const intro = parts[0].trim();
+        let items = parts.slice(1);
+        let footer = "";
+
+        if (items.length && /^Or just ask/i.test(items[items.length - 1])) {
+          footer = items.pop();
+        }
+
+        let html = intro ? `<p>${escapeHtml(intro)}</p>` : "";
+        if (items.length) {
+          html += `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+        }
+        if (footer) {
+          html += `<p>${escapeHtml(footer)}</p>`;
+        }
+        return html;
+      }
+
+      const lines = normalized
+        .split("\n")
+        .map((line) => line.replace(/^[\s\-•*]+\s*/, "").trim())
+        .filter(Boolean);
+
+      if (lines.length <= 1) {
+        return `<p>${escapeHtml(normalized)}</p>`;
+      }
+
+      const intro = lines[0];
+      const items = lines.slice(1);
+      return `<p>${escapeHtml(intro)}</p><ul>${items
+        .map((item) => `<li>${escapeHtml(item)}</li>`)
+        .join("")}</ul>`;
+    }
+
+    function setAssistantContent(node, text) {
+      node.innerHTML = formatAssistantText(text);
+    }
+
+    function setupInput(input, sendBtn) {
+      input.addEventListener("input", () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 200) + "px";
+        sendBtn.classList.toggle("visible", input.value.trim().length > 0);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          if (input.value.trim()) sendMessage(input);
+        }
+      });
+
+      sendBtn.addEventListener("click", () => {
+        if (input.value.trim()) sendMessage(input);
+      });
+    }
+
+    setupInput(landingInput, landingSend);
+    setupInput(chatInput, chatSend);
+
+    document.getElementById("prewritten-hub71").addEventListener("click", () => {
+      const prompt = document.getElementById("prewritten-hub71").dataset.prompt;
+      landingInput.value = prompt;
+      landingInput.dispatchEvent(new Event("input"));
+      sendMessage(landingInput);
+    });
+
+    // document.getElementById("new-chat").addEventListener("click", resetChat);
+
+    function resetChat() {
+      conversationHistory = [];
+      preferences = null;
+      shownProperties = [];
+      messagesInner.innerHTML = "";
+      landing.classList.remove("hidden");
+      chatView.classList.remove("active");
+      landingInput.value = "";
+      chatInput.value = "";
+      landingInput.dispatchEvent(new Event("input"));
+      chatInput.dispatchEvent(new Event("input"));
+      landingInput.focus();
+      activeInput = landingInput;
+    }
+
+    function switchToChat() {
+      landing.classList.add("hidden");
+      chatView.classList.add("active");
+      activeInput = chatInput;
+      chatInput.focus();
+    }
+
+    function appendMessage(role, content) {
+      switchToChat();
+
+      const div = document.createElement("div");
+      div.className = `message ${role}`;
+
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+
+      if (role === "user") {
+        avatar.textContent = "H";
+      } else {
+        avatar.innerHTML = ASSISTANT_ICON;
+      }
+
+      const body = document.createElement("div");
+      body.className = "message-content";
+      if (role === "assistant") {
+        setAssistantContent(body, content);
+      } else {
+        body.textContent = content;
+      }
+
+      div.appendChild(avatar);
+      div.appendChild(body);
+      messagesInner.appendChild(div);
+      messagesScroll.scrollTop = messagesScroll.scrollHeight;
+    }
+
+    function showTyping() {
+      const div = document.createElement("div");
+      div.className = "message assistant";
+      div.id = "typing";
+      div.innerHTML = `
+        <div class="message-avatar">
+          ${ASSISTANT_ICON}
+        </div>
+        <div class="message-content">
+          <div class="typing-indicator"><span></span><span></span><span></span></div>
+        </div>
+      `;
+      messagesInner.appendChild(div);
+      messagesScroll.scrollTop = messagesScroll.scrollHeight;
+    }
+
+    function removeTyping() {
+      document.getElementById("typing")?.remove();
+    }
+
+    async function sendMessage(input) {
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = "";
+      input.style.height = "auto";
+      input.dispatchEvent(new Event("input"));
+
+      appendMessage("user", text);
+      conversationHistory.push({ role: "user", content: text });
+
+      showTyping();
+
+      try {
+        const response = await fetch(CONFIG.API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: CONFIG.MODEL,
+            messages: conversationHistory,
+            preferences,
+            shown: shownProperties,
+          }),
+        });
+
+        removeTyping();
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || `API error ${response.status}`);
+        }
+
+        preferences = data.preferences || preferences;
+        shownProperties = data.properties || [];
+
+        appendAssistantReply(data.reply, data.properties);
+        conversationHistory.push({ role: "assistant", content: data.reply });
+      } catch (err) {
+        removeTyping();
+        appendMessage("assistant", `Error: ${err.message}`);
+      }
+    }
+  </script>
+</body>
+</html>
