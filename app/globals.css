@@ -58,6 +58,86 @@ textarea {
   scrollbar-width: thin;
 }
 
+/* ── Hackathon dashboard ── */
+.dashboard-shell {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(217, 180, 93, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(151, 201, 183, 0.08), transparent 50%),
+    #08090c;
+  color: #f4eee4;
+}
+
+@keyframes dash-confetti {
+  0% {
+    transform: translate3d(0, -10px, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 100vh, 0) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.dash-confetti {
+  animation: dash-confetti 1.9s ease-out forwards;
+}
+
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dash-rise {
+  animation: dash-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dash-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(217, 180, 93, 0);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(217, 180, 93, 0.35);
+  }
+}
+
+.dash-glow {
+  animation: dash-glow 2s ease-in-out infinite;
+}
+
+@keyframes dash-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.dash-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(217, 180, 93, 0.08), transparent);
+  animation: dash-scan 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .cesium-viewer-bottom,
 .cesium-viewer-toolbar,
 .cesium-viewer-animationContainer,
