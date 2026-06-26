@@ -342,6 +342,28 @@
       color: var(--text-primary);
     }
 
+    .message-content p {
+      margin: 0 0 10px;
+    }
+
+    .message-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-content ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .message-content li {
+      margin-bottom: 6px;
+    }
+
+    .message-content strong {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
     .message.user .message-content {
       color: #d4d4d4;
     }
@@ -380,6 +402,280 @@
 
     .hidden {
       display: none !important;
+    }
+
+    /* ── Property cards ── */
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .property-card {
+      background: rgba(30, 31, 32, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .property-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .property-card-body {
+      padding: 14px;
+    }
+
+    .property-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .property-card-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .property-card-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 8px;
+    }
+
+    .property-card-desc {
+      font-size: 13px;
+      line-height: 1.45;
+      color: #b8b8b8;
+    }
+
+    .property-broker {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: none;
+    }
+
+    .property-card:hover .property-broker {
+      display: block;
+    }
+
+    .property-broker-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .property-broker-agency {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #25d366;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .whatsapp-btn:hover {
+      background: #1ebe57;
+    }
+
+    /* ── Property modal ── */
+    .property-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    .property-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .property-modal-panel {
+      width: min(720px, 100%);
+      max-height: min(90vh, 900px);
+      overflow-y: auto;
+      background: #1a1b1c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      scrollbar-width: thin;
+      scrollbar-color: #444 transparent;
+    }
+
+    .property-modal-hero {
+      position: relative;
+    }
+
+    .property-modal-hero img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .property-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .property-modal-close:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    .property-modal-body {
+      padding: 24px;
+    }
+
+    .property-modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .property-modal-meta {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .property-modal-price {
+      font-size: 20px;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+    }
+
+    .property-modal-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #c8c8c8;
+      margin-bottom: 20px;
+    }
+
+    .property-modal-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .property-modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .property-modal-tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .property-modal-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .property-modal-detail {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .property-modal-detail-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .property-modal-detail-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .property-modal-broker {
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .property-modal-broker-info {
+      min-width: 0;
+    }
+
+    .property-modal-broker-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .property-modal-broker-agency {
+      font-size: 13px;
+      color: var(--text-muted);
     }
   </style>
 </head>
@@ -499,6 +795,35 @@
     </main>
   </div>
 
+  <div class="property-modal" id="property-modal" aria-hidden="true">
+    <div class="property-modal-panel" role="dialog" aria-modal="true" aria-labelledby="property-modal-title">
+      <div class="property-modal-hero">
+        <img id="property-modal-image" src="" alt="" />
+        <button type="button" class="property-modal-close" id="property-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="property-modal-body">
+        <h2 class="property-modal-title" id="property-modal-title"></h2>
+        <div class="property-modal-meta" id="property-modal-meta"></div>
+        <div class="property-modal-price" id="property-modal-price"></div>
+        <p class="property-modal-desc" id="property-modal-desc"></p>
+
+        <div class="property-modal-section-title">Details</div>
+        <div class="property-modal-details" id="property-modal-details"></div>
+
+        <div class="property-modal-section-title">Amenities</div>
+        <div class="property-modal-tags" id="property-modal-amenities"></div>
+
+        <div class="property-modal-broker">
+          <div class="property-modal-broker-info">
+            <div class="property-modal-broker-name" id="property-modal-broker-name"></div>
+            <div class="property-modal-broker-agency" id="property-modal-broker-agency"></div>
+          </div>
+          <a class="whatsapp-btn" id="property-modal-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp broker</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const PRODUCT_NAME = "Property Finder but Better";
     const ASSISTANT_ICON = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3z"/></svg>`;
@@ -520,6 +845,247 @@
 
     let conversationHistory = [];
     let activeInput = landingInput;
+    let preferences = null;
+    let shownProperties = [];
+
+    const propertyModal = document.getElementById("property-modal");
+    const propertyModalClose = document.getElementById("property-modal-close");
+
+    function formatPrice(prop) {
+      const intent = preferences?.intent || "buy";
+      const amount = intent === "rent" ? prop.rentAED : prop.priceAED;
+      if (!amount) return "Price on request";
+      const formatted = amount.toLocaleString("en-AE");
+      return intent === "rent" ? `AED ${formatted}/yr` : `AED ${formatted}`;
+    }
+
+    function formatSqft(value) {
+      return value ? `${value.toLocaleString("en-AE")} sq ft` : "—";
+    }
+
+    function openPropertyModal(prop) {
+      document.getElementById("property-modal-title").textContent = prop.title;
+      document.getElementById("property-modal-meta").textContent =
+        `${prop.bedrooms} bed · ${prop.bathrooms} bath · ${prop.type} · ${prop.area}`;
+      document.getElementById("property-modal-price").textContent = formatPrice(prop);
+      document.getElementById("property-modal-desc").textContent = prop.description;
+
+      const image = document.getElementById("property-modal-image");
+      image.src = prop.images?.[0] || "assets/background.png";
+      image.alt = prop.title;
+      image.onerror = () => {
+        image.onerror = null;
+        image.src = "assets/background.png";
+      };
+
+      const details = document.getElementById("property-modal-details");
+      const intent = preferences?.intent || "buy";
+      const detailItems = [
+        ["Style", prop.style],
+        ["Size", formatSqft(prop.sizeSqft)],
+        ["Price / sq ft", prop.pricePerSqft ? `AED ${prop.pricePerSqft.toLocaleString("en-AE")}` : "—"],
+        ["Intent", intent === "rent" ? "Rent" : "Buy"],
+      ];
+
+      details.innerHTML = detailItems
+        .map(
+          ([label, value]) => `
+            <div class="property-modal-detail">
+              <div class="property-modal-detail-label">${escapeHtml(label)}</div>
+              <div class="property-modal-detail-value">${escapeHtml(String(value))}</div>
+            </div>
+          `
+        )
+        .join("");
+
+      const amenities = document.getElementById("property-modal-amenities");
+      amenities.innerHTML = (prop.amenities || [])
+        .map((item) => `<span class="property-modal-tag">${escapeHtml(item)}</span>`)
+        .join("");
+
+      document.getElementById("property-modal-broker-name").textContent = prop.broker.name;
+      document.getElementById("property-modal-broker-agency").textContent =
+        `${prop.broker.agency} · ${prop.broker.phone}`;
+
+      const whatsapp = document.getElementById("property-modal-whatsapp");
+      whatsapp.href = `https://wa.me/${prop.broker.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${prop.title}`)}`;
+
+      propertyModal.classList.add("open");
+      propertyModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      propertyModalClose.focus();
+    }
+
+    function closePropertyModal() {
+      propertyModal.classList.remove("open");
+      propertyModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    propertyModalClose.addEventListener("click", closePropertyModal);
+    propertyModal.addEventListener("click", (e) => {
+      if (e.target === propertyModal) closePropertyModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && propertyModal.classList.contains("open")) {
+        closePropertyModal();
+      }
+    });
+
+    function renderPropertyCards(properties) {
+      if (!properties?.length) return null;
+
+      const grid = document.createElement("div");
+      grid.className = "property-grid";
+
+      properties.forEach((prop) => {
+        const card = document.createElement("article");
+        card.className = "property-card";
+
+        const img = document.createElement("img");
+        img.src = prop.images?.[0] || "assets/background.png";
+        img.alt = prop.title;
+        img.loading = "lazy";
+        img.referrerPolicy = "no-referrer";
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = "assets/background.png";
+        };
+
+        const body = document.createElement("div");
+        body.className = "property-card-body";
+
+        const title = document.createElement("div");
+        title.className = "property-card-title";
+        title.textContent = prop.title;
+
+        const meta = document.createElement("div");
+        meta.className = "property-card-meta";
+        meta.textContent = `${prop.bedrooms} bed · ${prop.type} · ${prop.area}`;
+
+        const price = document.createElement("div");
+        price.className = "property-card-price";
+        price.textContent = formatPrice(prop);
+
+        const desc = document.createElement("div");
+        desc.className = "property-card-desc";
+        desc.textContent = prop.description;
+
+        const broker = document.createElement("div");
+        broker.className = "property-broker";
+        broker.innerHTML = `
+          <div class="property-broker-name">${escapeHtml(prop.broker.name)}</div>
+          <div class="property-broker-agency">${escapeHtml(prop.broker.agency)} · ${escapeHtml(prop.broker.phone)}</div>
+          <a class="whatsapp-btn" href="https://wa.me/${prop.broker.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${prop.title}`)}" target="_blank" rel="noopener">WhatsApp</a>
+        `;
+        broker.querySelector(".whatsapp-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+        });
+
+        body.appendChild(title);
+        body.appendChild(meta);
+        body.appendChild(price);
+        body.appendChild(desc);
+        body.appendChild(broker);
+        card.appendChild(img);
+        card.appendChild(body);
+        card.addEventListener("click", () => openPropertyModal(prop));
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `View details for ${prop.title}`);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openPropertyModal(prop);
+          }
+        });
+        grid.appendChild(card);
+      });
+
+      return grid;
+    }
+
+    function appendAssistantReply(reply, properties) {
+      switchToChat();
+
+      const div = document.createElement("div");
+      div.className = "message assistant";
+
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.innerHTML = ASSISTANT_ICON;
+
+      const body = document.createElement("div");
+      body.className = "message-content";
+
+      const text = document.createElement("div");
+      setAssistantContent(text, reply);
+      body.appendChild(text);
+
+      const cards = renderPropertyCards(properties);
+      if (cards) body.appendChild(cards);
+
+      div.appendChild(avatar);
+      div.appendChild(body);
+      messagesInner.appendChild(div);
+      messagesScroll.scrollTop = messagesScroll.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatAssistantText(text) {
+      const normalized = text
+        .replace(/\r\n/g, "\n")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .trim();
+
+      if (!normalized) return "";
+
+      if (/\s-\s[🏠📍💰🛏️]/.test(normalized)) {
+        const parts = normalized.split(/\s+-\s+/);
+        const intro = parts[0].trim();
+        let items = parts.slice(1);
+        let footer = "";
+
+        if (items.length && /^Or just ask/i.test(items[items.length - 1])) {
+          footer = items.pop();
+        }
+
+        let html = intro ? `<p>${escapeHtml(intro)}</p>` : "";
+        if (items.length) {
+          html += `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+        }
+        if (footer) {
+          html += `<p>${escapeHtml(footer)}</p>`;
+        }
+        return html;
+      }
+
+      const lines = normalized
+        .split("\n")
+        .map((line) => line.replace(/^[\s\-•*]+\s*/, "").trim())
+        .filter(Boolean);
+
+      if (lines.length <= 1) {
+        return `<p>${escapeHtml(normalized)}</p>`;
+      }
+
+      const intro = lines[0];
+      const items = lines.slice(1);
+      return `<p>${escapeHtml(intro)}</p><ul>${items
+        .map((item) => `<li>${escapeHtml(item)}</li>`)
+        .join("")}</ul>`;
+    }
+
+    function setAssistantContent(node, text) {
+      node.innerHTML = formatAssistantText(text);
+    }
 
     function setupInput(input, sendBtn) {
       input.addEventListener("input", () => {
@@ -554,6 +1120,8 @@
 
     function resetChat() {
       conversationHistory = [];
+      preferences = null;
+      shownProperties = [];
       messagesInner.innerHTML = "";
       landing.classList.remove("hidden");
       chatView.classList.remove("active");
@@ -589,7 +1157,11 @@
 
       const body = document.createElement("div");
       body.className = "message-content";
-      body.textContent = content;
+      if (role === "assistant") {
+        setAssistantContent(body, content);
+      } else {
+        body.textContent = content;
+      }
 
       div.appendChild(avatar);
       div.appendChild(body);
@@ -634,7 +1206,12 @@
         const response = await fetch(CONFIG.API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: CONFIG.MODEL, messages: conversationHistory }),
+          body: JSON.stringify({
+            model: CONFIG.MODEL,
+            messages: conversationHistory,
+            preferences,
+            shown: shownProperties,
+          }),
         });
 
         removeTyping();
@@ -645,7 +1222,10 @@
           throw new Error(data.error || `API error ${response.status}`);
         }
 
-        appendMessage("assistant", data.reply);
+        preferences = data.preferences || preferences;
+        shownProperties = data.properties || [];
+
+        appendAssistantReply(data.reply, data.properties);
         conversationHistory.push({ role: "assistant", content: data.reply });
       } catch (err) {
         removeTyping();
