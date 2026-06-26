@@ -1,2 +1,9 @@
 .env
+.env.local
 __pycache__/
+node_modules/
+.next/
+public/cesium/
+coverage/
+*.tsbuildinfo
+next-dev.*.log

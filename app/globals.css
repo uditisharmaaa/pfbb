@@ -1,0 +1,66 @@
+@import "cesium/Build/Cesium/Widgets/widgets.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #11100e;
+  --ink-soft: #26221d;
+  --paper: #f4eee4;
+  --paper-soft: rgba(244, 238, 228, 0.84);
+  --line: rgba(244, 238, 228, 0.2);
+  --copper: #c66b3d;
+  --mint: #97c9b7;
+  --gold: #d9b45d;
+  --smoke: rgba(17, 16, 14, 0.76);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--paper);
+  background:
+    linear-gradient(90deg, rgba(17, 16, 14, 0.96), rgba(17, 16, 14, 0.68) 48%, rgba(17, 16, 14, 0.22)),
+    url("/background.png") center / cover fixed no-repeat,
+    #11100e;
+  font-family: "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: var(--ink);
+  background: var(--mint);
+}
+
+.glass-panel {
+  border: 1px solid var(--line);
+  background: rgba(17, 16, 14, 0.68);
+  backdrop-filter: blur(22px);
+}
+
+.fine-scrollbar {
+  scrollbar-color: rgba(244, 238, 228, 0.28) transparent;
+  scrollbar-width: thin;
+}
+
+.cesium-viewer-bottom,
+.cesium-viewer-toolbar,
+.cesium-viewer-animationContainer,
+.cesium-viewer-timelineContainer {
+  display: none !important;
+}
