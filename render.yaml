@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: pfbb
+    runtime: node
+    plan: free
+    buildCommand: SKIP_CESIUM_COPY=1 pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: SKIP_CESIUM_COPY
+        value: "1"
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=460
+      - key: ANTHROPIC_API_KEY
+        sync: false
