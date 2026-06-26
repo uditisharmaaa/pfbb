@@ -6,12 +6,24 @@ import json
 import re
 from typing import Any
 
+from locations import ABU_DHABI_AREAS, DUBAI_AREAS
 from rank import DEFAULT_PREFERENCES
 
-REFINE_SYSTEM_PROMPT = """You maintain a property-search preference object for Dubai.
-Areas allowed: "Downtown Dubai", "Jumeirah".
+REFINE_SYSTEM_PROMPT = """You maintain a property-search preference object for the UAE.
+
+Cities: "Dubai", "Abu Dhabi".
+Dubai areas: "Downtown Dubai", "Jumeirah".
+Abu Dhabi areas: "Al Maryah Island", "Al Reem Island", "Khalifa City", "Saadiyat Island".
 Types allowed: "apartment", "penthouse", "villa", "townhouse".
 Styles allowed: "modern", "minimalist", "classic", "luxury", "industrial", "arabesque".
+
+Important geography:
+- Hub71 is in Abu Dhabi (Al Maryah Island / ADGM). NEVER map Hub71 to Dubai.
+- ISC Khalifa (SABIS) is in Abu Dhabi (Khalifa City area).
+- If the user mentions both Hub71 and ISC Khalifa, prefer areas that commute to both:
+  "Al Reem Island", "Khalifa City", "Al Maryah Island" (in that order).
+- Burj Khalifa / Dubai Mall => Downtown Dubai.
+- Jumeirah => Dubai.
 
 Given CURRENT preferences JSON, currently shown properties (if any), and a new user message,
 return ONLY the UPDATED preferences JSON object — no prose, no markdown, no code fences.
@@ -22,13 +34,14 @@ Rules:
 - "too pricey" => set budgetMax to ~85% of the lowest price in currently shown properties.
 - "cheaper" => lower budgetMax further (~70% of lowest shown).
 - "don't like the style" / "different style" => move current styles into dealbreakers and clear styles.
-- "villas in Jumeirah" => areas=["Jumeirah"], types=["villa"].
-- Family with kids => prefer 3+ bedrooms, add relevant mustHave tags like "play area" if appropriate.
+- Family with kids => prefer enough bedrooms (e.g. 3 kids often needs 4+ beds), add mustHave like "schools" or "play area".
 - If user mentions rent/leasing, set intent to "rent".
+- Set city correctly. Hub71, SABIS, ISC Khalifa, Khalifa City => city "Abu Dhabi".
 
 Output schema:
 {
   "intent": "buy" | "rent",
+  "city": "Dubai" | "Abu Dhabi" | null,
   "areas": string[],
   "types": string[],
   "bedrooms": number | null,
@@ -36,6 +49,7 @@ Output schema:
   "styles": string[],
   "mustHave": string[],
   "dealbreakers": string[],
+  "nearLandmarks": string[],
   "count": number,
   "notes": string
 }"""
@@ -63,6 +77,17 @@ def parse_preferences_json(text: str) -> dict[str, Any] | None:
 
     merged = {**DEFAULT_PREFERENCES, **data}
     merged["count"] = min(max(int(merged.get("count") or 3), 1), 10)
+
+    allowed_areas = set(DUBAI_AREAS + ABU_DHABI_AREAS)
+    merged["areas"] = [area for area in merged.get("areas") or [] if area in allowed_areas]
+
+    if merged.get("city") == "Abu Dhabi":
+        merged["areas"] = [
+            area for area in merged["areas"] if area in ABU_DHABI_AREAS
+        ] or merged["areas"]
+    elif merged.get("city") == "Dubai":
+        merged["areas"] = [area for area in merged["areas"] if area in DUBAI_AREAS] or merged["areas"]
+
     return merged
 
 
@@ -81,6 +106,7 @@ def build_refine_user_message(
                 "rentAED": prop.get("rentAED"),
                 "style": prop.get("style"),
                 "area": prop.get("area"),
+                "city": prop.get("city"),
                 "type": prop.get("type"),
             }
         )
@@ -101,6 +127,20 @@ def summarize_results(properties: list[dict[str, Any]], preferences: dict[str, A
         )
 
     count = len(properties)
+    landmarks = preferences.get("nearLandmarks") or []
+    city = preferences.get("city")
+
+    if landmarks and city:
+        places = " and ".join(landmarks)
+        if count == 1:
+            return f"Here is 1 home in {city} with a good commute to {places}."
+        return f"Here are {count} homes in {city} with a good commute to {places}."
+
+    if city:
+        if count == 1:
+            return f"Here is 1 home in {city} that matches your search."
+        return f"Here are {count} homes in {city} that match your search."
+
     if count == 1:
         return "Here is 1 home that matches your search."
     return f"Here are {count} homes that match your search."

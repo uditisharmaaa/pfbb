@@ -766,7 +766,7 @@
               type="button"
               class="prewritten-btn"
               id="prewritten-hub71"
-              data-prompt="I am looking for a room, I work at Hub71 and my kids are in ISC Khalifa (SABIS). I have 3 kids and I want to be in close proxomity to all"
+              data-prompt="I work at Hub71 in Abu Dhabi and my kids go to ISC Khalifa (SABIS). We have 3 kids and need a home close to both work and school."
             >Pre-written prompt</button>
           </div>
         </div>
@@ -961,7 +961,7 @@
 
         const meta = document.createElement("div");
         meta.className = "property-card-meta";
-        meta.textContent = `${prop.bedrooms} bed · ${prop.type} · ${prop.area}`;
+        meta.textContent = `${prop.bedrooms} bed · ${prop.type} · ${prop.area}${prop.city ? ` · ${prop.city}` : ""}`;
 
         const price = document.createElement("div");
         price.className = "property-card-price";

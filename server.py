@@ -9,6 +9,7 @@ from urllib import error, request
 
 import certifi
 
+from locations import infer_location_preferences, merge_preferences
 from prompt import (
     REFINE_SYSTEM_PROMPT,
     build_refine_user_message,
@@ -128,13 +129,28 @@ class Handler(SimpleHTTPRequestHandler):
         preferences = deepcopy(body.get("preferences") or DEFAULT_PREFERENCES)
         shown = body.get("shown") or []
 
-        updated = refine_preferences(model, preferences, message, shown)
+        inferred = infer_location_preferences(message)
+        llm_updated = refine_preferences(model, preferences, message, shown)
+        updated = merge_preferences(llm_updated, inferred, message)
         properties = rank_properties(PROPERTIES, updated)
+
+        if not properties and updated.get("city"):
+            properties = rank_properties(
+                PROPERTIES,
+                {
+                    **updated,
+                    "areas": [],
+                    "types": [],
+                    "budgetMax": None,
+                    "styles": [],
+                    "nearLandmarks": [],
+                },
+            )[: updated.get("count", 3)]
 
         if not properties:
             properties = rank_properties(
                 PROPERTIES,
-                {**updated, "areas": [], "types": [], "budgetMax": None, "styles": []},
+                {**updated, "areas": [], "types": [], "budgetMax": None, "styles": [], "city": None},
             )[: updated.get("count", 3)]
 
         reply = summarize_results(properties, updated)
